@@ -1,0 +1,9 @@
+if [[ $(ps -e | grep pianobar) ]]; then
+    echo -n "p" > ~/.config/pianobar/ctl
+else
+    if [[ $(ps -e | grep cmus) ]]; then
+	cmus-remote --pause
+    else 
+	gnome-terminal -x pianobar
+    fi
+fi

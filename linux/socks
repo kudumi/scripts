@@ -1,0 +1,10 @@
+if [ "$1" = "on" -o "$1" = "off" ]; then
+    if [ "$1" = "on" ]; then
+	gsettings set org.gnome.system.proxy mode 'manual' 
+	gsettings set org.gnome.system.proxy.socks host localhost
+	gsettings set org.gnome.system.proxy.http port 9999
+    else
+	gsettings set org.gnome.system.proxy mode 'none'
+    fi
+	echo "|> socks proxy has been turned $1"
+fi

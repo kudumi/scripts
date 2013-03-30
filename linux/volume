@@ -1,0 +1,11 @@
+if [ "${1::1}" == "+" ]; then
+    amixer set Master ${1:1}%+ unmute
+elif [ "${1::1}" == "-" ]; then
+    amixer set Master ${1:1}%-
+elif [ `echo $1 | grep -v - | grep -v +` ]; then
+    amixer set Master $1% unmute
+else
+    str=`amixer get Master | grep "Front Left:"`
+    str=${str#*[}
+    echo ${str%\%*}
+fi

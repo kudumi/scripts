@@ -1,0 +1,9 @@
+#!/bin/bash
+
+address=$1
+shift
+
+net_opts="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+net_id="-i $HOME/.ssh/hq_rsa"
+
+ssh $net_opts $net_id admin@$address $*

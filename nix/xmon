@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# . ~/.bashrc --silent
+
+name=mon
+
+inside_screen_already=-3
+
+screen -wipe 			# clear out stale screens
+
+if [[ `screen -ls | grep "[0-9]*.$name"` ]]; then
+    # if [ inside_screen ]; then
+    # 	echo "Already inside of a screen"
+    # 	exit $inside_screen_already
+    # else
+    screen -x $name
+    # fi
+else
+    screen -S $name
+fi

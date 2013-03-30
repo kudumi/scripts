@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# This is super hacky, but for some reason this program wouldnt work
+# when I tried to include the '-f' in '$*'. End result is functional.
+
+file=/tmp/narrate.$RANDOM.wav
+esc_vlc='vlc -f -I ncurses'
+
+case $1 in
+    -f )
+	shift
+	espeak -w $file -f "$*" ;;
+
+    * )
+	espeak -w $file "$*" ;;
+esac
+
+$esc_vlc $file
+rm -f $file

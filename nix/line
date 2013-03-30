@@ -1,0 +1,37 @@
+#!/usr/bin/perl -wT
+use strict;
+
+my $input = shift;
+# Checks the first argument for a plea of help
+if ($input =~ /(\[S]*(help)\[S]*)/) {
+print <<TERMINUS
+  usage: line INFILE "pattern"
+    line returns the line numbers of INFILE containing a 
+    string matching "pattern" in the specified input file.
+    
+    
+TERMINUS
+# Ain't no relative path hackery here
+} elsif ($input =~ /(.{0}\S*)/) {
+    $input = "$1";
+} else { die "(x) INFILE is tainted"; }
+
+
+my $s = shift;
+if ($s =~ /(.{0}[\S|\s]*)/) {
+    $s = "$1";
+} else {
+    die "(x) Pattern is tainted";
+}
+#print "String to match: " . $s . "\n";
+
+open (INFILE, "$input") or die "(x) Can not open $input: $!";
+my @FILE = <INFILE>;
+close INFILE or die "(x) Can not close $input: $!";
+
+my $linenum = 0;
+foreach(@FILE) {
+    my $line_contents = $_;
+    print $linenum . "\n" if ($line_contents =~ /(\S*($s)\S*)/); 
+    $linenum++;
+}

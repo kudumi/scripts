@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# definition of MAC addresses
+ghost=00:1b:b9:a6:28:58
+
+while [ "$input1" != quit ]; do
+echo "Which PC to wake?"
+echo "g) ghost"
+echo "q) quit"
+read -n1 -s input1
+
+if [ $input1 == g ]; then
+  /usr/bin/wol $ghost
+  exit 1
+fi
+
+if [ $input1 == Q ] || [ $input1 == q ]; then
+echo "bye."
+exit 1
+fi
+
+done
+echo  "this is the (quit) end."

@@ -1,0 +1,7 @@
+command=ssmtp
+case "$1" in
+    me)
+	$command $email ;;
+    *)
+	$command $1 ;;
+esac

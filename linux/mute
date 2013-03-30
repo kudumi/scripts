@@ -1,0 +1,7 @@
+if [ -f /tmp/.volume_record ]; then
+    volume `cat /tmp/.volume_record`
+    rm /tmp/.volume_record
+else
+    echo `volume` > /tmp/.volume_record
+    volume 0
+fi

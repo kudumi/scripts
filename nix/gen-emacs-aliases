@@ -1,0 +1,18 @@
+#!/bin/bash
+
+source ~/.bashrc --silent	# grab the aliases
+out="$HOME/.emcas.d/eshell/alias"
+
+case "$1" in
+
+        -h) cat <<EOF
+  Usage: -h        this message
+         [no args] test-run
+         -e        export
+EOF
+	;;
+
+    -e)  alias | sed -E "s/^alias ([^=]+)='(.*)'$/alias \1 \2 \$*/g; s/'\\\''/'/g;" > $out ;;
+
+    *)  alias | sed -E "s/^alias ([^=]+)='(.*)'$/alias \1 '\2 \$*'/g; s/'\\\''/'/g;" ;;
+esac

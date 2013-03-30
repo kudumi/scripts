@@ -1,0 +1,4 @@
+IFS="\n"
+command=$@
+$@
+growlnotify -t $@ -a Terminal.app -m "bash job $$ complete"

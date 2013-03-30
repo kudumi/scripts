@@ -1,0 +1,29 @@
+die() {
+    unset ip
+    exit 0
+}
+
+wifi_on()
+{
+    echo "|> Turning WiFi [en1] on..."
+    sudo ifconfig en1 up && echo "|> Success." || echo "|> Failure."
+    die
+}
+
+wifi_off()
+{
+    echo "|> Turning WiFi [en1] off..."
+    sudo ifconfig en1 down && echo "|> Success." || echo "|> Failure."
+    die
+}
+
+if [ "$1" == "on" ]; then wifi_on
+elif [ "$1" == "off" ]; then wifi_off
+fi
+
+ip=`ifconfig | grep -A 3 en1 | tail -n 1`
+ip=${ip#*: }
+
+if [ "$ip" == "inactive" ]; then wifi_on
+else wifi_off
+fi

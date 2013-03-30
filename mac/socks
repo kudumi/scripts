@@ -1,0 +1,6 @@
+if [ "$1" = "on" -o "$1" = "off" ]; then
+   networksetup -setsocksfirewallproxystate AirPort $1
+   echo "|> socks proxy has been turned $1"
+else 
+   networksetup -getsocksfirewallproxy Airport
+fi

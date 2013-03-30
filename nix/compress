@@ -1,0 +1,17 @@
+#!/bin/bash
+
+. ~/.bashrc --silent
+
+if [ -n "$1" ] ; then
+    case "$1" in
+        *.tar)     tar cvf "$1" $*  ;;
+        *.tar.bz2) tar cjvf "$1" $* ;;
+        *.tar.gz)  tar czvf "$1" $* ;;
+        *.tgz)     tar czf "$1" $*  ;;
+        *.zip)     zip -v "$1" $*   ;;
+        *.rar)     rar "$1" $*      ;;
+    esac
+else
+    echo "Usage: compress <foo.tar.gz> ./foo ./bar"
+    return $false
+fi

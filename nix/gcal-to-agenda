@@ -1,0 +1,24 @@
+#!/bin/bash
+source ~/.bashrc --silent
+
+WGET=`which wget`
+ICS2ORG=~/Dropbox/scripts/nix/ics2org
+ICSFILE=/tmp/gcalics
+ORGFILE=~/Dropbox/org/gcal.org
+CLASSES=https://www.google.com/calendar/ical/kj429o9ve278jqkvi742a6hft0%40group.calendar.google.com/private-25add006317939d22980c5d50a68aaa2/basic.ics
+SHORETEL=https://www.google.com/calendar/ical/g0a3rth6qpkdct8kbvrnnivsoo%40group.calendar.google.com/private-3a842bc291f2dd59452bdf47f70cbc1e/basic.ics
+PERSONAL=https://www.google.com/calendar/ical/eric.s.crosson%40gmail.com/private-f6365f407d3a38e74875c1e689c1d354/basic.ics
+
+# $1 url of calendar
+# $2 name of calendar
+function appendCalendar() {
+    $WGET --no-check-certificate -qO $ICSFILE $1 
+    awk -f $ICS2ORG -v calName=$2 < $ICSFILE >> $ORGFILE
+    rm $ICSFILE
+}
+
+# download file and parse
+rm $ORGFILE
+appendCalendar $CLASSES 'classes'
+appendCalendar $SHORETEL 'shoretel'
+appendCalendar $PERSONAL 'personal'

@@ -1,0 +1,5 @@
+case "$1" in 
+    --i|int) ioreg -l | grep -i capacity | tr '\n' ' | ' | awk '{printf("%d", $10/$5 * 100)}' ;;
+    *)  ioreg -l | grep -i capacity | tr '\n' ' | ' | awk '{printf("%.2f%%", $10/$5 * 100)}';;
+esac
+echo

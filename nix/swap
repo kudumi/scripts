@@ -1,0 +1,12 @@
+#!/bin/bash
+
+local TMPFILE=swap.$$
+
+[ $# -ne 2 ] && echo "$ALERT 2 arguments needed" && return $false
+[ ! -e "$1" ] && echo "$ALERT $1 does not exist" && return $false
+[ ! -e "$2" ] && echo "$ALERT $2 does not exist" && return $false
+
+mv "$1" $TMPFILE
+mv "$2" "$1"
+mv $TMPFILE "$2"
+echo "File renaming successful."

@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# $1: if
+# $2: of
+
+if [[ $# -ne 2 ]]; then
+    cat <<EOF
+Usage: ${0##/} if of
+
+       This is a wrapper for dd, that will display progress.
+EOF
+fi
+
+cut="`which cut` -d' ' -f"
+
+fsize=`ls -s --block-size=1048576 $1 | $cut 1`
+file="$$.dd"
+
+dd if=$1 of=$2 bs=1K count=10000 > $file & # start the command
+pid=`pgrep -l '^dd$' | head -n1 | $cut 1`
+
+delay="2s"
+ddprint="sudo kill -USR1 $pid"
+( while [ $pid ]; do sleep $delay && $ddprint; done ) &
+
+while [ $pid ]; do
+
+    while [ ! -e $file ]; do
+	utimer -c 500ms > /dev/null
+    done				# wait for output
+
+    out=`tail -n3 $file`
+    out=`echo $out | tail -n1 | $cut 3`
+    out=${out#"("}
+
+    ratio=$((100*out/fsize))
+    echo -ne "$out/$fzise\t$ratio%\r"
+
+done
+
+sleep $delay			# wait for last output
+sleep $delay
+rm $file > /dev/null		# destroy all evidence

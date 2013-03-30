@@ -1,0 +1,23 @@
+#!/usr/bin/perl -w
+use strict;
+# This program uses Math::BaseCnv
+# If not installed, run this command
+# perl -MCPAN -e "install Math::BaseCnv"
+use Math::BaseCnv;
+
+if ($#ARGV != 1 && $#ARGV != 2) {
+    print "Usage: rprint [number to convert] [new base] (old base)\n";
+    print "      old base need not be specified if 10\n\n";
+    exit;
+}
+
+my $old = 10;
+if ($#ARGV == 2) {
+    $old = $ARGV[2];
+}
+
+my $new = $ARGV[1];
+my $target = $ARGV[0];
+
+my $result = cnv($target, $old, $new);
+print $result . "\n";

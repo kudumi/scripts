@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [[ "$#" -le 2 ]]; then
+    . ~/.bashrc --silent
+    changeColor ${BBlack}
+    echo -e "\tUsage: $FUNCNAME start end path [output]"
+    changeColor ${Color_Off}
+    echo -e "\tThis program will extract an excerpt from the given path (incluisve)"
+    echo -e "\t If the output path is undefined, the excerpt will be of the form inputfile_pXX-pYY.pdf"
+    exit 1
+fi
+
+if [[ "$#" -ne 4 ]]; then
+    output=${3%.pdf}_p${1}-p${2}.pdf
+else
+    output="$4"
+fi
+
+gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER \
+    -dFirstPage=${1} \
+    -dLastPage=${2} \
+    -sOutputFile=${4} \
+    ${3}

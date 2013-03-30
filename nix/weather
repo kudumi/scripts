@@ -1,0 +1,5 @@
+#!/bin/bash
+
+str=`google calendar today --cal "Weather"`
+str=${str%,*}
+echo ${str:11}

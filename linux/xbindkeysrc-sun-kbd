@@ -1,0 +1,116 @@
+# For the benefit of emacs users: -*- shell-script -*-
+###########################
+# xbindkeys configuration #
+###########################
+#
+# Version: 1.8.5
+#
+# If you edit this file, do not forget to uncomment any lines
+# that you change.
+# The pound(#) symbol may be used anywhere for comments.
+#
+# To specify a key, you can use 'xbindkeys --key' or
+# 'xbindkeys --multikey' and put one of the two lines in this file.
+#
+# The format of a command line is:
+#    "command to start"
+#       associated key
+#
+#
+# A list of keys is in /usr/include/X11/keysym.h and in
+# /usr/include/X11/keysymdef.h
+# The XK_ is not needed.
+#
+# List of modifier:
+#   Release, Control, Shift, Mod1 (Alt), Mod2 (NumLock),
+#   Mod3 (CapsLock), Mod4, Mod5 (Scroll).
+#
+
+# The release modifier is not a standard X modifier, but you can
+# use it if you want to catch release events instead of press events
+
+# By defaults, xbindkeys does not pay attention with the modifiers
+# NumLock, CapsLock and ScrollLock.
+# Uncomment the lines above if you want to pay attention to them.
+
+#keystate_numlock = enable
+#keystate_capslock = enable
+#keystate_scrolllock= enable
+
+# Examples of commands:
+
+#"xbindkeys_show" 
+#  control+shift + q
+
+# set directly keycode (here control + f with my keyboard)
+#"xterm"
+#  c:41 + m:0x4
+
+# specify a mouse button
+#"xterm"
+#  control + b:2
+
+#"xterm -geom 50x20+20+20"
+#   Shift+Mod2+alt + s
+#
+## set directly keycode (here control+alt+mod2 + f with my keyboard)
+#"xterm"
+#  alt + c:0x29 + m:4 + mod2
+#
+## Control+Shift+a  release event starts rxvt
+#"rxvt"
+#  release+control+shift + a
+#
+## Control + mouse button 2 release event starts rxvt
+#"rxvt"
+#  Control + b:2 + Release
+
+# next track in cmus|pianobar - Cut
+"if [[ $(ps -e | grep pianobar) ]]; then echo -n 'n' > ~/.config/pianobar/ctl; else if [[ $(ps -e | grep cmus) ]]; then cmus-remote --next; fi; fi"
+m:0x10 + c:145
+# previous track in cmus - Copy
+"if [[ $(ps -e | grep cmus) ]]; then cmus-remote --previous; fi"
+m:0x10 + c:141
+# pause in cmus|pianobar - Paste
+"pause"
+m:0x10 + c:143
+
+# volume up - Open
+"volume +5"
+m:0x10 + c:142
+# little volume up - Shift + Open
+"volume +2"
+Shift+m:0x10 + c:142
+# volume down - Find
+"volume -5"
+m:0x10 + c:144
+# little volume down - Shift + Find
+"volume -2"
+Shift+m:0x10 + c:144
+# volume mute - Front
+"amixer sset Master toggle"
+m:0x10 + c:140
+# volume mute - Props
+"gnome-terminal -x bc -lq"
+m:0x10 + c:138
+# xlock - Stop
+"projectM-pulseaudio"
+m:0x10 + c:136
+
+# dim - Help
+"gnome-screensaver-command -a"
+m:0x10 + c:146
+# screen-off - Shift+Help
+"/Dropbox/scripts/linux/vbetool_assist"
+Shift+m:0x10 + c:146
+# turn screen off - Again
+"gnome-terminal -x /Dropbox/scripts/linux/.reattachcontrol"
+m:0x10 + c:137
+
+# opens a small terminal - Undo
+"gnome-terminal -x /Dropbox/scripts/linux/.reattachmusic"
+m:0x10 + c:139
+
+##################################
+# End of xbindkeys configuration #
+##################################

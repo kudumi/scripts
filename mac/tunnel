@@ -1,0 +1,31 @@
+#!/bin/bash 
+source ~/.bashrc --silent
+
+machine=luigi
+
+# This function was causing "unexpected end of file" errors
+#function getID()
+#{ sshid=$(ps -x | grep 9999 | grep -v grep | awk '{print $1}') }
+
+sshid=$(ps -x | grep 9999 | grep -v grep | awk '{print $1}')
+if [ -n "$1" ]; then
+   if [ -z "$sshid" ]; then
+      echo "|> No ssh tunnel exists"
+      echo "|> Exiting without action..."
+   else
+      kill $sshid
+      echo "|> ssh tunnel with PID $sshid has been terminated."
+   fi
+else
+   if [ -z "$sshid" ]; then
+      ssh -NCD 9999 $machine &
+      sshid=$(ps -x | grep 9999 | grep -v grep | awk '{print $1}')
+      echo "|> Tunnel to machine $machine created with PID $sshid."
+   else
+      echo "|> Tunnel $sshid already exists to $machine. Exiting without action..."
+       #kill $sshid
+       #ssh -NCD 9999 $machine &
+       #echo "|> Tunnel $sshid killed, new tunnel $(ps -x | grep 9999 | grep -v grep | awk '{print $1}') to machine $machine created."
+   fi
+fi
+unset sshid machine

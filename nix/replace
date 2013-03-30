@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ "$1" == "-h" -o "$1" == "--help" ]; then
+    echo <<EOF
+This program will replace all instances of $1 in the files of the current directory with $2.
+Notice how the arguments are not encapsulated in quotations- only single words will work.
+This is used for batch renaming of files in a folder.
+
+USAGE: replace $1 $2
+EOF
+    exit 0;
+else
+
+    for i in *$1*; do
+	mv -- "$i" "${i//$1/$2}" && echo "$i --> ${i//$1/$2}"
+    done
+
+fi

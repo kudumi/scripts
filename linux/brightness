@@ -1,0 +1,40 @@
+#!/bin/bash
+
+[ "$UID" != 0 ] && echo "err, you need to be root" && exit 1
+
+ctrl_file=/sys/class/backlight/acpi_video0/brightness
+max_file=/sys/class/backlight/acpi_video0/max_brightness
+
+brightness=$(cat $ctrl_file)
+max=$(cat $max_file)
+min=0
+
+help_exit_code=-2
+help_message=$(cat <<EOF
+This script adjusts the display brightness on my ThinkPad X230
+
+Usage: brightness +/- or VALUE
+
+       where VALUE is a value from $min to $max
+EOF
+)
+
+case "$1" in
+    +)
+        brightness=$(($brightness+$max/10))
+        [ $brightness -gt $max ] && brightness=$max ;;
+
+    -)
+        brightness=$(($brightness-$max/10))
+        [ $brightness -lt $min ] && brightness=$min ;;
+
+    -h|--help)
+	echo $help_message && exit $help_exit_code ;;
+
+    [0-9]*)
+	brightness="$1" ;;
+
+    *) echo "$1 - Unrecognized argument." ;;
+esac
+
+echo $brightness > $ctrl_file

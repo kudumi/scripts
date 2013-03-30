@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ -z "$@" ]; then
+    echo -ne "\a"
+else
+    for ((i=0; i<$1; i++))
+    do
+    	echo -ne "\a"
+	sleep .2
+    done
+fi
