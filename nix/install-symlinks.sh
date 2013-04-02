@@ -22,8 +22,9 @@ mkdir $HOME/.config
 mkdir $HOME/.config/pianobar
 
 # Directories to clear (caveat emptor)
-remove $HOME/.emacs.d
-remove $HOME/.config/awesome
+
+$remove $HOME/.emacs.d
+$remove $HOME/.config/awesome
 
 $link "$config/emacs/.emacs" $HOME/.emacs
 $link "$config/emacs/.emacs.d" $HOME/.emacs.d
