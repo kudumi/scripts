@@ -39,6 +39,8 @@ $link "$config/xbindkeysrc" $HOME/.xbindkeysrc
 $link "$config/xresources" $HOME/.Xresources
 $link "$config/yaourtrc" $HOME/.yaourtrc
 $link "$config/octaverc" $HOME/.octaverc
+$link "$config/.gnus.el" $HOME/.gnus.el
+$link "$config/.inputrc" $HOME/.inputrc
 
 # Machine-specific
 if [ -e "$config/machines/`hostname`" ]; then

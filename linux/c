@@ -1,0 +1,15 @@
+#!/bin/bash
+
+unset incognito
+
+while [[ $1 ]]; do
+    case $1 in
+	i|in|incognito) incognito="--incognito " ;;
+
+        *) echo "$1 is not a recognized flag." ;;
+    esac
+    shift
+done
+
+# --memory-model=low
+/usr/bin/chromium $@ ${incognito} 2>/dev/null &

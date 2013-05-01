@@ -47,6 +47,11 @@ Usage: ${0##*/} [-w|n] [-i private_key] [-s build_server] [-b build_number|-p pa
     -p    specify the path to the phone binary used to flash
                 the phone if other than the default
 
+     --rpasswd
+     -r    specify a root password for the pphone (used to su after
+                ssh). Only specify this option if the root password is no
+                longer "ShoreTel"
+
      --wait
      -w    wait for current build to finish building
                 before taking any action. This is enabled
@@ -67,7 +72,7 @@ EOF
     exit $help_exit
 }
 
-while [[ $1 == *-* ]]; do	# Parse arguments
+while [[ $1 == *"-"* ]]; do	# Parse arguments
     case $1 in
 
 	-i|--id )
@@ -79,6 +84,10 @@ while [[ $1 == *-* ]]; do	# Parse arguments
 
 	-n|--no-wait )
 	    unset wait_for_build_completion ;;
+
+	-r|--rpasswd )
+		root_auth="$1 $2"
+		shift ;;
 
 	-p|--path )
 	    phone_bin="$1 $2"
@@ -134,9 +143,13 @@ if [ $wait_for_build_completion ]; then
 fi
 
 unset feedback			# capture error codes here
+color_arr=('\e[40m' '\e[41m' '\e[42m' '\e[43m' '\e[44m' '\e[45m' '\e[46m' '\e[47m' '\e[0;90m' '\e[0;91m' '\e[0;92m' '\e[0;93m' '\e[0;94m' '\e[0;95m' '\e[0;96m' '\e[0;97m' '\e[1;29m' '\e[1;31m' '\e[1;32m' '\e[1;33m' '\e[1;34m' '\e[1;35m' '\e[1;36m' '\e[1;37m' '\e[4;30m' '\e[4;31m' '\e[4;32m' '\e[4;33m' '\e[4;34m' '\e[4;35m' '\e[4;36m' '\e[4;37m')
 feedback=$(for phone in $*; do
+	# Pick a color for differentiating output between phones
 
-    (./flash-phone.sh $net_id $phone_bin $build $build_server $phone >&2 & \
+	color="--oid ${color_arr[$RANDOM % ${#color_arr[*]}]}"
+
+    (./flash-phone.sh $net_id $root_auth $color $phone_bin $build $build_server $phone >&2 & \
 	wait %1; code=$?; [ $code -ne 0 ] && echo $phone:$code ) &
 
 done)
