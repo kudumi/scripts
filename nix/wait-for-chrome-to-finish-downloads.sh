@@ -28,9 +28,9 @@ EOF
 done
 
 echo "Waiting for downloads to complete..."
-output=`ls -1 $HOME/Downloads/*.crdownload`
+output=`ls -1 $HOME/Downloads/*.>crdownload 2>/dev/null`
 while [[ $output ]]; do
-    output=`ls -1 $HOME/Downloads/*.crdownload`
+    output=`ls -1 $HOME/Downloads/*.crdownload 2>/dev/null`
     sleep ${time}
 done
 
