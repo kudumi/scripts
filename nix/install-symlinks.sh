@@ -10,6 +10,9 @@
 
 # Install all symlinks in the config folder to their respective homes.
 
+#Bug! $HOME/.ssh/config sometimes complains about bad permissions!
+# Consider forcing permissions (on the duplicated files) to 600
+
 link="ln -fsv"
 hardlink="ln"
 mkdir="mkdir -p"
