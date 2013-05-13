@@ -91,8 +91,8 @@ case `uname -a` in
 	    "/cygdrive/c/Users/`whoami`/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/" ;;
 
     *ARCH* )			# prepare Arch Linux
-if [[ -z $no_root ]]; then
-    link_root $config/yaourtrc /etc/yaourtrc
-    link_root $config/pacman.conf /etc/pacman.conf
-fi
+	if [[ -z $no_root ]]; then
+	    link_root $config/yaourtrc /etc/yaourtrc
+	    link_root $config/pacman.conf /etc/pacman.conf
+	fi
 esac
