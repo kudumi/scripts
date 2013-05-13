@@ -3,7 +3,10 @@
 #Bug! $HOME/.ssh/config sometimes complains about bad permissions!
 # Consider forcing permissions (on the duplicated files) to 600
 
-# TODO: prevent users from calling this script as sudo
+if [[ `whoami` == "root" ]]; then
+    echo "You had better not run this command as root!"
+    exit -1
+fi
 
 install="ln -fsv"
 ensure_exists="mkdir -p"
