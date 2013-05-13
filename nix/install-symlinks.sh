@@ -1,60 +1,98 @@
 #!/bin/bash
 
-#Found a bug! Bad owner or permissions on /cygdrive/c/Users/ecrosson/.ssh/config
-# Solution: chown each file
-
-#Bug! symlinks of directories are placed inside of directories instead
-#of overwriting;
-# Solution: reverse mkdir -p, that is, delete each directory first
-# hold on:..... that sounds scary. Lets deliberate
-
-# Install all symlinks in the config folder to their respective homes.
-
 #Bug! $HOME/.ssh/config sometimes complains about bad permissions!
 # Consider forcing permissions (on the duplicated files) to 600
 
-link="ln -fsv"
-hardlink="ln"
-mkdir="mkdir -p"
-remove="rm -rf"
+# TODO: prevent users from calling this script as sudo
+
+install="ln -fsv"
+ensure_exists="mkdir -p"
 config="$HOME/Dropbox/config"
 
-# Dependencies
-mkdir $HOME/.ssh
-mkdir $HOME/.config
-mkdir $HOME/.config/pianobar
+function link() {
+    # $3 is the parent folder that we must take special care exists,
+    # if we are venturing too far from $HOME sweet $HOME.
+    [[ $3 ]] && ${ensure_exists} "$3"
 
-# Directories to clear (caveat emptor)
-$remove $HOME/.emacs.d
-$remove $HOME/.config/awesome
+    # $2 defaults to $HOME (and negates the need for $3).
+    install_path=$2
+    [[ -z $2 ]] && install_path=$HOME
 
-$link $config/emacs/.emacs $HOME/.emacs
-$link $config/emacs/.emacs.d $HOME/.emacs.d
-$link $config/bash/bashrc $HOME/.bashrc
-$link $config/awesome $HOME/.config/awesome
-$link $config/gitconfig $HOME/.gitconfig
-$link $config/pianobar $HOME/.config/pianobar/config
-$link $config/rtorrentrc $HOME/.rtorrent.rc
-$link $config/screen/screenrc $HOME/.screenrc
-$link $config/ssh/config $HOME/.ssh/config
-$link $config/xbindkeysrc $HOME/.xbindkeysrc
-$link $config/xresources $HOME/.Xresources
-$link $config/yaourtrc $HOME/.yaourtrc
-$link $config/octaverc $HOME/.octaverc
-$link $config/.gnus.el $HOME/.gnus.el
-$link $config/.inputrc $HOME/.inputrc
+    if [[ -d $1 && -d $2 ]]; then
+	# When installing a directory that already exists, we need to
+	# tread lightly. Removing the directory is no good- if the
+	# user has some custom files in that directory that we're not
+	# expecting to exist, then removing the entire directory would
+	# not be a nice move. As such, we have to copy the contents of
+	# $1 into $2, rather than linking all of $2.
+	    for file in $1/*; do
+		rm -rf $file	# no mercy for folders I am overwriting
+		$install $file $install_path/
+	    done
 
-# Machine specific
+    else
+	# If the directory doesn't exist yet, we have nothing to worry
+	# about. Go ahead and symlink $1- if the user is going to
+	# place custom files in $1 later he will just have to think
+	# about his own actions first.
+	$install $1 $install_path
+    fi
+
+    chown `whoami` $install_path		# take ownership of the new file
+}
+
+# This function is a stripped down version of link (above). It only
+# handles files, not entire directories.
+function link_root() {
+    sudo $install $1 $2
+}
+
+# Flags
+unset no_root
+
+while [[ $1 == *"-"* ]]; do
+    case $1 in
+	--no-root|-nr ) no_root=1 ;;
+	* ) echo "Unrecognized flag. Ignoring $1..."
+    esac
+    shift
+done
+
+link $config/.inputrc
+link $config/.octaverc
+link $config/.gitconfig
+link $config/.Xresources
+link $config/bash/.bashrc
+link $config/.rtorrent.rc
+link $config/.xbindkeysrc
+link $config/emacs/.emacs
+link $config/emacs/.emacs.d
+link $config/screen/.screenrc
+link $config/emacs.d/esc-lisp/.gnus.el
+link $config/ssh/config $HOME/.ssh/config $HOME/.ssh
+link $config/awesome $HOME/.config/awesome $HOME/.config
+link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
+
+# Machine specific configuration scripts
 if [[ -e $config/machines/`hostname` ]]; then
-    for file in `ls -A1 "$config/machines/\`hostname\`/"`; do
-	$link $config/machines/`hostname`/$file $HOME/$file
+    for file in `ls -A1 $config/machines/\`hostname\`/`; do
+	link $config/machines/`hostname`/$file $HOME/$file
     done
 fi
 
-case `uname -a` in		# prepare Windows
-    *Cygwin* )
+
+hardlink="ln"
+case `uname -a` in
+
+    # Hardlinks are necessary because Windows does not recognize
+    # symlinks like Unix does.
+    *Cygwin* )			# prepare Windows
 	$hardlink "$config/../scripts/windows/rc.compat.bat" \
 	    "/cygdrive/c/Users/`whoami`/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/" ;;
+
     *ARCH* )			# prepare Arch Linux
-	$link $config/pacman.conf /etc/pacman.conf
+if [[ -z $no_root ]]; then
+    link_root $config/yaourtrc /etc/yaourtrc
+    link_root $config/pacman.conf /etc/pacman.conf
+fi
 esac
