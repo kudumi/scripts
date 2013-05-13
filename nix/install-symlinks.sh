@@ -17,7 +17,7 @@ function link() {
     # if we are venturing too far from $HOME sweet $HOME.
     [[ $3 ]] && ${ensure_exists} "$3"
 
-    # $2 defaults to $HOME (and negates the need for $3).
+    # $2 defaults to $HOME (which negates the need for $3).
     install_path=$2
     [[ -z $2 ]] && install_path=$HOME
 
@@ -46,7 +46,10 @@ function link() {
 
 # This function is a stripped down version of link (above). It only
 # handles files, not entire directories.
+# $2 defaults to /etc
 function link_root() {
+    install_path=$2
+    [[ -z $2 ]] && install_path=/etc
     sudo $install $1 $2
 }
 
@@ -78,7 +81,7 @@ link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
 
 # Machine specific configuration scripts
 if [[ -e $config/machines/`hostname` ]]; then
-    for file in `ls -A1 $config/machines/\`hostname\`/*`; do
+    for file in `ls -A1 $config/machines/\`hostname\`/`; do
 	link $config/machines/`hostname`/$file
     done
 fi
@@ -94,7 +97,7 @@ case `uname -a` in
 
     *ARCH* )			# prepare Arch Linux
 	if [[ -z $no_root ]]; then
-	    link_root $config/yaourtrc /etc/yaourtrc
-	    link_root $config/pacman.conf /etc/pacman.conf
+	    link_root $config/yaourtrc
+	    link_root $config/pacman.conf
 	fi
 esac
