@@ -78,11 +78,10 @@ link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
 
 # Machine specific configuration scripts
 if [[ -e $config/machines/`hostname` ]]; then
-    for file in `ls -A1 $config/machines/\`hostname\`/`; do
-	link $config/machines/`hostname`/$file $HOME/$file
+    for file in `ls -A1 $config/machines/\`hostname\`/*`; do
+	link $config/machines/`hostname`/$file
     done
 fi
-
 
 hardlink="ln"
 case `uname -a` in
