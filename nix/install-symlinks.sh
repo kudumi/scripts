@@ -50,7 +50,7 @@ function link() {
 function link_root() {
     install_path=$2
     [[ -z $2 ]] && install_path=/etc
-    sudo $install $1 $2
+    sudo $install $1 $install_path
 }
 
 # Flags
@@ -95,9 +95,13 @@ case `uname -a` in
 	$hardlink "$config/../scripts/windows/rc.compat.bat" \
 	    "/cygdrive/c/Users/`whoami`/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/" ;;
 
+    # TODO: if I hit C-c here, don't prompt me for sudo's password for
+    # each subsequent line!
     *ARCH* )			# prepare Arch Linux
 	if [[ -z $no_root ]]; then
 	    link_root $config/yaourtrc
 	    link_root $config/pacman.conf
+	    link_root $config/bash/root.bashrc /root/.bashrc
+	    link_root $config/wpa_supplicant.conf
 	fi
 esac
