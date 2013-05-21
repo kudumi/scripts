@@ -3,19 +3,19 @@
 #Bug! $HOME/.ssh/config sometimes complains about bad permissions!
 # Consider forcing permissions (on the duplicated files) to 600
 
-if [[ `whoami` == "root" ]]; then
+if [[ `whoami` == root ]]; then
     echo "You had better not run this command as root!"
     exit -1
 fi
 
 install="ln -fsv"
-ensure_exists="mkdir -p"
+ensure_dir_exists="mkdir -p"
 config="$HOME/Dropbox/config"
 
 function link() {
     # $3 is the parent folder that we must take special care exists,
     # if we are venturing too far from $HOME sweet $HOME.
-    [[ $3 ]] && ${ensure_exists} "$3"
+    [[ $3 ]] && ${ensure_dir_exists} "$3"
 
     # $2 defaults to $HOME (which negates the need for $3).
     install_path=$2
@@ -29,7 +29,7 @@ function link() {
 	# not be a nice move. As such, we have to copy the contents of
 	# $1 into $2, rather than linking all of $2.
 	    for file in $1/*; do
-		rm -rf $file	# no mercy for folders I am overwriting
+		rm -rf $install_path/${file##*/} # no mercy for folders I am overwriting
 		$install $file $install_path/
 	    done
 
