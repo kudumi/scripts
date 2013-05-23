@@ -19,9 +19,12 @@ function link() {
 
     # $2 defaults to $HOME (which negates the need for $3).
     install_path=$2
-    [[ -z $2 ]] && install_path=$HOME
+    if [[ -z $install_path ]]; then
+	install_path=$HOME
+	${ensure_dir_exists} "$2" 2>/dev/null
+    fi
 
-    if [[ -d $1 && -d $2 ]]; then
+    if [[ -d $1 ]]; then
 	# When installing a directory that already exists, we need to
 	# tread lightly. Removing the directory is no good- if the
 	# user has some custom files in that directory that we're not
@@ -30,15 +33,8 @@ function link() {
 	# $1 into $2, rather than linking all of $2.
 	    for file in $1/*; do
 		rm -rf $install_path/${file##*/} # no mercy for folders I am overwriting
-		$install $file $install_path/
+		$install $file $install_path/${file##*/}
 	    done
-
-    else
-	# If the directory doesn't exist yet, we have nothing to worry
-	# about. Go ahead and symlink $1- if the user is going to
-	# place custom files in $1 later he will just have to think
-	# about his own actions first.
-	$install $1 $install_path
     fi
 
     chown `whoami` $install_path		# take ownership of the new file
@@ -74,7 +70,7 @@ link $config/.xbindkeysrc
 link $config/emacs/.emacs
 link $config/emacs/.emacs.d
 link $config/screen/.screenrc
-link $config/emacs.d/esc-lisp/.gnus.el
+link $config/emacs/.emacs.d/esc-lisp/.gnus.el
 link $config/ssh/config $HOME/.ssh/config $HOME/.ssh
 link $config/awesome $HOME/.config/awesome $HOME/.config
 link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
