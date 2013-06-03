@@ -17,14 +17,16 @@ function link() {
     # if we are venturing too far from $HOME sweet $HOME.
     [[ $3 ]] && ${ensure_dir_exists} "$3"
 
-    # $2 defaults to $HOME (which negates the need for $3).
+    # $2 defaults to $HOME (if ommitted, negates the need for $3).
     install_path=$2
-    if [[ -z $install_path ]]; then
+    if [[ -z $2 ]]; then
 	install_path=$HOME
-	${ensure_dir_exists} "$2" 2>/dev/null
     fi
 
-    if [[ -d $1 ]]; then
+    # echo $1 should be installed in $install_path
+    # return
+
+    if [[ -d $1 && -d $2 ]]; then
 	# When installing a directory that already exists, we need to
 	# tread lightly. Removing the directory is no good- if the
 	# user has some custom files in that directory that we're not
@@ -35,9 +37,15 @@ function link() {
 		rm -rf $install_path/${file##*/} # no mercy for folders I am overwriting
 		$install $file $install_path/${file##*/}
 	    done
+    elif [[ ! -d $2 ]]; then
+	# If the second directory does not exist yet, link all of $1
+	$install $1 $install_path
+    else
+	# Otherwise, we are dealing with a single file. Let's link it directly
+	$install $1 $install_path
     fi
 
-    chown `whoami` $install_path		# take ownership of the new file
+    chown `whoami` $install_path # take ownership of the new file
 }
 
 # This function is a stripped down version of link (above). It only
@@ -74,6 +82,7 @@ link $config/emacs/.emacs.d/esc-lisp/.gnus.el
 link $config/ssh/config $HOME/.ssh/config $HOME/.ssh
 link $config/awesome $HOME/.config/awesome $HOME/.config
 link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
+link $config/uzbl.config $HOME/.config/uzbl/config $HOME/.config/uzbl
 
 # Machine specific configuration scripts
 if [[ -e $config/machines/`hostname` ]]; then
@@ -99,5 +108,6 @@ case `uname -a` in
 	    link_root $config/pacman.conf
 	    link_root $config/bash/root.bashrc /root/.bashrc
 	    link_root $config/wpa_supplicant.conf
+	    link_root $config/issue
 	fi
 esac
