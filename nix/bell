@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Enable the bell for this script
+xset b
+
 if [ -z "$@" ]; then
     echo -ne "\a"
 else
@@ -9,3 +12,6 @@ else
 	sleep .2
     done
 fi
+
+# Disable the bell again
+xset -b
