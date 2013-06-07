@@ -26,6 +26,9 @@ function link() {
     # echo $1 should be installed in $install_path
     # return
 
+    # If the second directory does not exist yet, create it
+    [[ ! -e $install_path && ! -d $install_path ]] && mkdir $install_path
+
     if [[ -d $1 && -d $2 ]]; then
 	# When installing a directory that already exists, we need to
 	# tread lightly. Removing the directory is no good- if the
@@ -37,9 +40,6 @@ function link() {
 		rm -rf $install_path/${file##*/} # no mercy for folders I am overwriting
 		$install $file $install_path/${file##*/}
 	    done
-    elif [[ ! -d $2 ]]; then
-	# If the second directory does not exist yet, link all of $1
-	$install $1 $install_path
     else
 	# Otherwise, we are dealing with a single file. Let's link it directly
 	$install $1 $install_path
