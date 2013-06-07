@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Bug! $HOME/.ssh/config sometimes complains about bad permissions!
+#TODO: $HOME/.ssh/config sometimes complains about bad permissions!
 # Consider forcing permissions (on the duplicated files) to 600
 
 if [[ `whoami` == root ]]; then
@@ -58,37 +58,41 @@ function link_root() {
 }
 
 # Flags
-unset no_root
+unset no_root only_root
 
 while [[ $1 == *"-"* ]]; do
     case $1 in
 	--no-root|-nr ) no_root=1 ;;
+	--only-root|-or ) only_root=1 ;;
 	* ) echo "Unrecognized flag. Ignoring $1..."
     esac
     shift
 done
 
-link $config/.inputrc
-link $config/.octaverc
-link $config/.gitconfig
-link $config/.Xresources
-link $config/bash/.bashrc
-link $config/.rtorrent.rc
-link $config/.xbindkeysrc
-link $config/emacs/.emacs
-link $config/emacs/.emacs.d
-link $config/screen/.screenrc
-link $config/emacs/.emacs.d/esc-lisp/.gnus.el
-link $config/ssh/config $HOME/.ssh/config $HOME/.ssh
-link $config/awesome $HOME/.config/awesome $HOME/.config
-link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
-link $config/uzbl.config $HOME/.config/uzbl/config $HOME/.config/uzbl
+if [[ -z $only_root ]]; then
+    link $config/.inputrc
+    link $config/.octaverc
+    link $config/.gitconfig
+    link $config/.Xresources
+    link $config/bash/.bashrc
+    link $config/.rtorrent.rc
+    link $config/.xbindkeysrc
+    link $config/emacs/.emacs
+    link $config/emacs/.emacs.d
+    link $config/screen/.screenrc
+    link $config/emacs/.emacs.d/esc-lisp/.gnus.el
+    link $config/ssh/config $HOME/.ssh/config $HOME/.ssh
+    link $config/awesome $HOME/.config/awesome $HOME/.config
+    link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
+    link $config/uzbl.config $HOME/.config/uzbl/config $HOME/.config/uzbl
 
-# Machine specific configuration scripts
-if [[ -e $config/machines/`hostname` ]]; then
-    for file in `ls -A1 $config/machines/\`hostname\`/`; do
-	link $config/machines/`hostname`/$file
-    done
+    # Machine specific configuration scripts
+    if [[ -e $config/machines/`hostname` ]]; then
+	for file in `ls -A1 $config/machines/\`hostname\`/`; do
+	    link $config/machines/`hostname`/$file
+	done
+    fi
+
 fi
 
 hardlink="ln"
