@@ -23,9 +23,6 @@ function link() {
 	install_path=$HOME
     fi
 
-    # echo $1 should be installed in $install_path
-    # return
-
     # If the second directory does not exist yet, create it
     [[ ! -e $install_path && ! -d $install_path ]] && mkdir $install_path
 
