@@ -8,20 +8,38 @@ if [[ `whoami` == root ]]; then
     exit -1
 fi
 
+# Commands with arguments
+hardlink="ln"
 install="ln -fsv"
 ensure_dir_exists="mkdir -p"
+copy="rsync -Prahz --rsh=ssh"
+ssh="ssh -o PreferredAuthentications=publickey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+# Paths
 config="$HOME/Dropbox/config"
 
 function link() {
+    # If we are installing to a remote host, we don't need to use any
+    # form of links. Simply copy the file over to the host in the
+    # appropriate directory (overwriting existing files, not dirs).
+    if [[ $remote_host ]]; then
+	# We have to take care of the explicit dependencies for the
+	# install_path
+
+	# TODO! redirection so $HOME here becomes real $HOME in $remote_host
+	[[ $3 ]] && $ssh -t $remote_host mkdir -p $3
+	$copy $1 $remote_host:$2
+	##### end We have to
+	return
+    fi
+
     # $3 is the parent folder that we must take special care exists,
     # if we are venturing too far from $HOME sweet $HOME.
     [[ $3 ]] && ${ensure_dir_exists} "$3"
 
     # $2 defaults to $HOME (if ommitted, negates the need for $3).
     install_path=$2
-    if [[ -z $2 ]]; then
-	install_path=$HOME
-    fi
+    [[ -z $2 ]] && install_path=$HOME
 
     # If the second directory does not exist yet, create it
     [[ ! -e $install_path && ! -d $install_path ]] && mkdir $install_path
@@ -55,12 +73,26 @@ function link_root() {
 }
 
 # Flags
-unset no_root only_root
+unset no_root only_root remote_host
 
 while [[ $1 == *"-"* ]]; do
     case $1 in
 	--no-root|-nr ) no_root=1 ;;
 	--only-root|-or ) only_root=1 ;;
+
+	--remote|-r )
+	    remote_host=$2
+	    shift
+
+	    # To ensure the password is not asked multiple times,
+	    # invoke ssh-copy-id if needed. Printing the remote host's
+	    # hostname is a dummy command. The result of this block is
+	    # that the user will never be prompted for the remote
+	    # password more than once.
+	     if [[ -z `$ssh -t $remote_host hostname 2>/dev/null` ]]; then
+		 ssh-copy-id $remote_host
+	     fi ;;
+
 	* ) echo "Unrecognized flag. Ignoring $1..."
     esac
     shift
@@ -93,7 +125,6 @@ if [[ -z $only_root ]]; then
 
 fi
 
-hardlink="ln"
 case `uname -a` in
 
     # Hardlinks are necessary because Windows does not recognize
