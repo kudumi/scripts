@@ -1,1 +1,9 @@
+download_dir=$HOME/Downloads
+
+# Ensure the Downloads directory exists, and cd into that dir to
+# ensure all downloads are placed in an appropriate directory
+mkdir -p $download_dir
+pushd $download_dir
+
+# Start uzbl-tabbed
 uzbl-tabbed $*
