@@ -77,6 +77,7 @@ if [[ -z $only_root ]]; then
     link $config/bash/.bashrc
     link $config/.rtorrent.rc
     link $config/.xbindkeysrc
+    link $config/.xscreensaver
     link $config/emacs/.emacs
     link $config/emacs/.emacs.d
     link $config/screen/.screenrc
