@@ -9,12 +9,12 @@ sym_color="\e[`dircolors -p | grep "symbolic link" | cut -d' ' -f 2`m"
 unset output
 
 # Short representation of $HOME sweet $HOME
-path=${path/"/home/`whoami`"/"~"}
+#path=${path/?"~"/"/home/`whoami`"}
 
 while [[ ${path} ]]; do
     output=${output}${path%%/*}
 
-    if [[ `find $HOME${output#'~'} -maxdepth 0 -type l` && ${output} != '~' ]]; then
+    if [[ `find ${output#'~'} -maxdepth 0 -type l` ]]; then
 	output=${output%/*}/${sym_color}${output##*/}${Color_Off}
     fi
 
