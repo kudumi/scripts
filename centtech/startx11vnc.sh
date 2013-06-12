@@ -12,4 +12,4 @@ done
 
 [[ -z $no_password ]] && password="-rfbauth $HOME/.vnc/passwd"
 
-x11vnc -forever -viewonly $password -display :0 &>/dev/null &
+x11vnc -nobell -forever -viewonly $password -display :0 &>/dev/null &
