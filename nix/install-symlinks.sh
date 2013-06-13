@@ -111,7 +111,7 @@ if [[ -z $only_root ]]; then
     link $config/emacs/.emacs.d
     link $config/screen/.screenrc
     link $config/emacs/.emacs.d/esc-lisp/.gnus.el
-    link $config/ssh/config $HOME/.ssh/config $HOME/.ssh
+    link $config/ssh/config $HOME/.ssh $HOME/.ssh
     link $config/awesome $HOME/.config/awesome $HOME/.config
     link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
     link $config/uzbl.config $HOME/.config/uzbl/config $HOME/.config/uzbl
