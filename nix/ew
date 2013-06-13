@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# If the daemon isn't running, fire 'er up
+if [[ -z `emacsclient -e "(message \"test\")" 2>/dev/null` ]]; then
+    emacs --daemon
+fi
+
+emacsclient -c $* &
