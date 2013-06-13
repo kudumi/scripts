@@ -1,5 +1,7 @@
 #!/usr/bin/ruby
 
+# Created by Eric Crosson Thursday June 13, 2013 12:24 PM
+
 if ARGV.size != 2 && ARGV.size != 3
   p "Usage: rprint [number to convert] [new base] (old base)"
   p "       (old base) defaults to 10"
