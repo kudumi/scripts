@@ -11,6 +11,10 @@ host=`grep -A1 "$host_key" $config | grep -i Hostname | cut -d' ' -f2`
 rfbauth=`grep -A2 "$host_key" $vnc_config | grep -i rfbauth | cut -d' ' -f2`
 
 # If a password is specified, then we need to include it in the call to vncviewer
-[[ $rfbauth ]] && rfbauth="-passwd ${rfbauth}"
+if [[ $rfbauth && -e $rfbauth ]]; then
+    rfbauth="-passwd ${rfbauth}"
+else
+    vncpasswd # give the user a chance to never have to do this again
+fi
 
 vncviewer $rfbauth $host &2>/dev/null &
