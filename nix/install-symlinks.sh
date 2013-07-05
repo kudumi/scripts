@@ -100,16 +100,19 @@ done
 
 if [[ -z $only_root ]]; then
     link $config/.inputrc
+    link $config/.gdbinit
     link $config/.octaverc
     link $config/.gitconfig
+    link $config/emacs/diary
     link $config/.Xresources
     link $config/bash/.bashrc
-    link $config/.rtorrent.rc
+    link $config/.rtorrent.rc  "" $HOME/.screensession  # hack
     link $config/.xbindkeysrc
     link $config/.xscreensaver
-    link $config/emacs/.emacs
+    link $config/emacs/.emacs.el
     link $config/emacs/.emacs.d
     link $config/screen/.screenrc
+    link $config/emacs/.emacs.d/.bbdb
     link $config/emacs/.emacs.d/esc-lisp/.gnus.el
     link $config/ssh/config $HOME/.ssh $HOME/.ssh
     link $config/awesome $HOME/.config/awesome $HOME/.config
