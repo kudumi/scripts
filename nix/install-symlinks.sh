@@ -99,6 +99,14 @@ while [[ $1 == *"-"* ]]; do
 done
 
 if [[ -z $only_root ]]; then
+
+    # Mutt configs
+    link $config/.mutt/.muttrc
+    link $config/addressbook $HOME/.abook $HOME/.abook
+    link $config/.mutt/passwords.gpg $HOME/.mutt $HOME/.mutt
+    link $config/.mutt/centtech.muttrc $HOME/.mutt $HOME/.mutt
+    link $config/.mutt/.msmtprc
+
     link $config/.inputrc
     link $config/.gdbinit
     link $config/.octaverc
@@ -106,7 +114,6 @@ if [[ -z $only_root ]]; then
     link $config/emacs/diary
     link $config/.Xresources
     link $config/bash/.bashrc
-    link $config/.rtorrent.rc  "" $HOME/.screensession  # hack
     link $config/.xbindkeysrc
     link $config/.xscreensaver
     link $config/emacs/.emacs.el
@@ -115,6 +122,8 @@ if [[ -z $only_root ]]; then
     link $config/emacs/.emacs.d/.bbdb
     link $config/emacs/.emacs.d/esc-lisp/.gnus.el
     link $config/ssh/config $HOME/.ssh $HOME/.ssh
+    link $config/.rtorrent.rc  "" $HOME/.screensession  # hack
+    link $config/getmailrc $HOME/.getmail $HOME/.getmail
     link $config/awesome $HOME/.config/awesome $HOME/.config
     link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
     link $config/uzbl.config $HOME/.config/uzbl/config $HOME/.config/uzbl
