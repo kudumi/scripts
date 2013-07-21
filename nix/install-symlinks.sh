@@ -204,7 +204,7 @@ case `uname -a` in
 	$hardlink "$config/../scripts/windows/rc.compat.bat" \
 	    "/cygdrive/c/Users/`whoami`/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/" ;;
 
-    *ARCH*|*LIBRE* )		# prepare Arch Linux
+    *ARCH*|*LIBRE* )		# prepare Arch Linux, Parabola
 	if [[ -z $no_root ]]; then
 	    function control_c() { exit 1 ;}
 	    trap control_c SIGINT
