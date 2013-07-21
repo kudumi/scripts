@@ -72,6 +72,28 @@ function link_root() {
     sudo $install $1 $install_path
 }
 
+function changeColor() {
+    echo -ne $1
+}
+
+# ARGS: color, string_to_print
+#   Will not print newline
+function message() {
+    changeColor ${1}
+    echo -ne "$2"
+    changeColor ${Color_Off}
+}
+
+# ARGS: color, string_to_print
+#    will print newline
+function section() {
+    message ${BBlue} ":: "
+    message ${BWhite} "$1\n"
+}
+
+# Includes
+source /home/eric/Dropbox/config/bash/bash-colors.sh
+
 # Flags
 unset no_root only_root remote_host
 
@@ -100,35 +122,71 @@ done
 
 if [[ -z $only_root ]]; then
 
-    # Mutt configs
+    section "Installing mail configs"
     link $config/.mutt/.muttrc
-    link $config/addressbook $HOME/.abook $HOME/.abook
-    link $config/.mutt/passwords.gpg $HOME/.mutt $HOME/.mutt
-    link $config/.mutt/centtech.muttrc $HOME/.mutt $HOME/.mutt
-    link $config/.mutt/.msmtprc
+    link $config/.mutt/colors              $HOME/.mutt $HOME/.mutt
+    link $config/.mutt/macros              $HOME/.mutt
+    link $config/.mutt/bindings            $HOME/.mutt
+    link $config/.mutt/passwords.gpg       $HOME/.mutt
+    link $config/.mutt/centtech.muttrc     $HOME/.mutt
+    link $config/.mutt/esc.subscriptions   $HOME/.mutt
+    link $config/addressbook               $HOME/.abook $HOME/.abook
 
-    link $config/.inputrc
+    section "Installing msmtp configs"
+    link $config/.mutt/.msmtprc
+    link $config/.mutt/.msmtp.esc.gpg      $HOME/.mutt
+    link $config/.mutt/.msmtp.centtech.gpg $HOME/.mutt
+
+    section "Installing imapfilter configs"
+    link $config/.imapfilter/esc.gpg    $HOME/.imapfilter $HOME/.imapfilter
+    link $config/.imapfilter/config.lua $HOME/.imapfilter
+
+
+    section "Installing gpg configs"
+    link $config/gpg.conf       $HOME/.gnupg $HOME/.gnupg
+    link $config/gpg-agent.conf $HOME/.gnupg
+
+
+    section "Installing Emacs configs"
     link $config/.gdbinit
-    link $config/.octaverc
-    link $config/.gitconfig
     link $config/emacs/diary
+    link $config/emacs/.emacs.d
+    link $config/emacs/.emacs.el
+    link $config/emacs/.emacs.d/.bbdb
+    # link $config/emacs/.emacs.d/esc-lisp/.gnus.el
+
+    section "Installing awesome configs"
+    link $config/awesome $HOME/.config/awesome $HOME/.config
+
+    section "Installing git configs"
+    link $config/.gitconfig
+
+    section "Installing xorg configs"
     link $config/.Xresources
-    link $config/bash/.bashrc
     link $config/.xbindkeysrc
     link $config/.xscreensaver
-    link $config/emacs/.emacs.el
-    link $config/emacs/.emacs.d
-    link $config/screen/.screenrc
-    link $config/emacs/.emacs.d/.bbdb
-    link $config/emacs/.emacs.d/esc-lisp/.gnus.el
+
+    section "Installing shell configs"
+    link $config/bash/.bashrc
+
+    section "Installing ssh configs"
     link $config/ssh/config $HOME/.ssh $HOME/.ssh
-    link $config/.rtorrent.rc  "" $HOME/.screensession  # hack
-    link $config/getmailrc $HOME/.getmail $HOME/.getmail
-    link $config/awesome $HOME/.config/awesome $HOME/.config
-    link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
+
+    section "Installing screen configs"
+    link $config/screen/.screenrc
+
+    section "Installing uzbl configs"
     link $config/uzbl.config $HOME/.config/uzbl/config $HOME/.config/uzbl
 
+    section "Installing other configs"
+    link $config/.inputrc
+    link $config/.octaverc
+    link $config/.rtorrent.rc  "" $HOME/.screensession  # hack
+    # link $config/getmailrc $HOME/.getmail $HOME/.getmail
+    link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
+
     # Machine specific configuration scripts
+    section "Installing host-specific configs"
     if [[ -e $config/machines/`hostname` ]]; then
 	for file in `ls -A1 $config/machines/\`hostname\`/`; do
 	    link $config/machines/`hostname`/$file
@@ -137,6 +195,7 @@ if [[ -z $only_root ]]; then
 
 fi
 
+section "Installing operating system-specific configs"
 case `uname -a` in
 
     # Hardlinks are necessary because Windows does not recognize
@@ -145,10 +204,12 @@ case `uname -a` in
 	$hardlink "$config/../scripts/windows/rc.compat.bat" \
 	    "/cygdrive/c/Users/`whoami`/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/" ;;
 
-    # TODO: if I hit C-c here, don't prompt me for sudo's password for
-    # each subsequent line!
-    *ARCH* )			# prepare Arch Linux
+    *ARCH*|*LIBRE* )		# prepare Arch Linux
 	if [[ -z $no_root ]]; then
+	    function control_c() { exit 1 ;}
+	    trap control_c SIGINT
+
+	    section "Installing root configs"
 	    link_root $config/yaourtrc
 	    link_root $config/pacman.conf
 	    link_root $config/bash/root.bashrc /root/.bashrc
