@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ -z `which mailcheck 2>/dev/null` ]]; then
+    echo "Cannot check mail"
+    exit 1
+fi
+
 # Customize these
 mailboxes="Inbox rss"
 none="."			# no mail signal
