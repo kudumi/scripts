@@ -25,4 +25,5 @@ for box in ${mailboxes}; do
     output="${output}${flag}${separator}${box}${Color_Off}${separator}"
 done
 
+rm ${mailcheckrc}
 echo -e ${output}
