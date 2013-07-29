@@ -1,12 +1,17 @@
 #!/bin/bash
 
 if [[ -z `which mailcheck 2>/dev/null` ]]; then
-    echo "Cannot check mail"
+    echo "mailcheck not installed"
+    exit 1
+elif [[ ! -e $HOME/.netrc ]]; then
+    echo "logged out"
     exit 1
 fi
 
 # Customize these
 mailboxes="Inbox rss"
+workboxes=("Inbox")
+
 none="."			# no mail signal
 some="!"			# some mail signal
 
@@ -16,7 +21,20 @@ mailcheckrc="$HOME/.mailcheckrc"
 mailcheck_prefix="imap://esc@ericcrosson.com@imap.secureserver.net:143/"
 separator=" "			# formatting
 
+
+
 for box in ${mailboxes}; do
+
+    flag=${none}
+    echo ${mailcheck_prefix}${box} > ${mailcheckrc}
+    [[ `mailcheck | grep new` ]] && flag=${some} # new mail indicator
+
+    output="${output}${flag}${separator}${box}${Color_Off}${separator}"
+done
+
+[[ ${#output} != 0 ]] && output="${output} | "
+
+for box in ${workboxes}; do
 
     flag=${none}
     echo ${mailcheck_prefix}${box} > ${mailcheckrc}
