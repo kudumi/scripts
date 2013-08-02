@@ -72,17 +72,9 @@ function link_root() {
     sudo $install $1 $install_path
 }
 
-function changeColor() {
-    echo -ne $1
-}
-
-# ARGS: color, string_to_print
-#   Will not print newline
-function message() {
-    changeColor ${1}
-    echo -ne "$2"
-    changeColor ${Color_Off}
-}
+# Includes
+source $HOME/Dropbox/config/bash/bash.io.sh
+loadFile ${bash_config}/bash.colors.sh
 
 # ARGS: color, string_to_print
 #    will print newline
@@ -90,9 +82,6 @@ function section() {
     message ${BBlue} ":: "
     message ${BWhite} "$1\n"
 }
-
-# Includes
-source /home/eric/Dropbox/config/bash/bash-colors.sh
 
 # Flags
 unset no_root only_root remote_host
@@ -111,9 +100,8 @@ while [[ $1 == *"-"* ]]; do
 	    # hostname is a dummy command. The result of this block is
 	    # that the user will never be prompted for the remote
 	    # password more than once.
-	     if [[ -z `$ssh -t $remote_host hostname 2>/dev/null` ]]; then
-		 ssh-copy-id $remote_host
-	     fi ;;
+	     [[ -z `$ssh -t $remote_host hostname 2>/dev/null` ]] && \
+		 ssh-copy-id $remote_host ;;
 
 	* ) echo "Unrecognized flag. Ignoring $1..."
     esac
@@ -133,7 +121,7 @@ if [[ -z $only_root ]]; then
     link $config/addressbook               $HOME/.abook $HOME/.abook
 
     section "Installing msmtp configs"
-    link $config/.mutt/.msmtprc
+    link $config/.mutt/.msmtprc && chmod -v 600 $HOME/.msmtprc
     link $config/.mutt/.msmtp.esc.gpg      $HOME/.mutt
     link $config/.mutt/.msmtp.centtech.gpg $HOME/.mutt
 
@@ -206,14 +194,18 @@ case `uname -a` in
 
     *ARCH*|*LIBRE* )		# prepare Arch Linux, Parabola
 	if [[ -z $no_root ]]; then
+
+	    # Only prompt for sudo passwd once
 	    function control_c() { exit 1 ;}
 	    trap control_c SIGINT
 
 	    section "Installing root configs"
+	    link_root $config/issue
 	    link_root $config/yaourtrc
 	    link_root $config/pacman.conf
-	    link_root $config/bash/root.bashrc /root/.bashrc
-	    link_root $config/wpa_supplicant.conf
-	    link_root $config/issue
+	    link_root $config/bash/.bashrc.root.sh /root/.bashrc
+
+	    # If the wireless config is necessary
+	    [[ `ip addr | grep wlp` ]] && link_root $config/wpa_supplicant.conf
 	fi
 esac
