@@ -51,10 +51,10 @@ function link() {
 	# expecting to exist, then removing the entire directory would
 	# not be a nice move. As such, we have to copy the contents of
 	# $1 into $2, rather than linking all of $2.
-	    for file in $1/*; do
-		rm -rf $install_path/${file##*/} # no mercy for folders I am overwriting
-		$install $file $install_path/${file##*/}
-	    done
+	for file in $1/*; do
+	    rm -rf $install_path/${file##*/} # no mercy for folders I am overwriting
+	    $install $file $install_path/${file##*/}
+	done
     else
 	# Otherwise, we are dealing with a single file. Let's link it directly
 	$install $1 $install_path
@@ -76,20 +76,14 @@ function link_root() {
 source $HOME/Dropbox/config/bash/bash.io.sh
 loadFile ${bash_config}/bash.colors.sh
 
-# ARGS: color, string_to_print
-#    will print newline
-function section() {
-    message ${BBlue} ":: "
-    message ${BWhite} "$1\n"
-}
-
 # Flags
-unset no_root only_root remote_host
+unset no_root only_root remote_host not_shared
 
 while [[ $1 == *"-"* ]]; do
     case $1 in
 	--no-root|-nr ) no_root=1 ;;
 	--only-root|-or ) only_root=1 ;;
+	--not-shared|-ns ) not_shared=1 ;;
 
 	--remote|-r )
 	    remote_host=$2
@@ -100,10 +94,28 @@ while [[ $1 == *"-"* ]]; do
 	    # hostname is a dummy command. The result of this block is
 	    # that the user will never be prompted for the remote
 	    # password more than once.
-	     [[ -z `$ssh -t $remote_host hostname 2>/dev/null` ]] && \
-		 ssh-copy-id $remote_host ;;
+	    [[ -z `$ssh -t $remote_host hostname 2>/dev/null` ]] && \
+		ssh-copy-id $remote_host ;;
 
-	* ) echo "Unrecognized flag. Ignoring $1..."
+	--help|-h)
+
+            cat<<EOF
+
+ Only use this program if you are quite certain of what you are doing.
+
+       --no-root    -nr     Don't install files in /etc
+       --only-root  -or     Only install files in /etc
+       --not-shared -ns     This is not a shared machine, overwrite esc's stuff in /etc
+
+       --remote     -r      Install to a remote host (not functional)
+       --help       -h      Display this menu
+
+EOF
+            exit 1 ;;
+
+
+	* ) echo "Unrecognized flag: $1"
+	    exit 1 ;;
     esac
     shift
 done
@@ -111,29 +123,31 @@ done
 if [[ -z $only_root ]]; then
 
     section "Installing mail configs"
-    link $config/.mutt/.muttrc
-    link $config/.mutt/colors              $HOME/.mutt $HOME/.mutt
-    link $config/.mutt/macros              $HOME/.mutt
-    link $config/.mutt/bindings            $HOME/.mutt
-    link $config/.mutt/passwords.gpg       $HOME/.mutt
-    link $config/.mutt/centtech.muttrc     $HOME/.mutt
-    link $config/.mutt/esc.subscriptions   $HOME/.mutt
-    link $config/addressbook               $HOME/.abook $HOME/.abook
+    link $config/.mutt/muttrc                   $HOME/.mutt  $HOME/.mutt/cache
+    link $config/.mutt/.mutt.colors              $HOME/.mutt
+    link $config/.mutt/.mutt.macros              $HOME/.mutt
+    link $config/.mutt/.mutt.bindings            $HOME/.mutt
+    link $config/.mutt/.mutt.passwords.gpg       $HOME/.mutt
+    link $config/.mutt/.muttrc.centtech          $HOME/.mutt
+    link $config/.mutt/.muttrc.esc               $HOME/.mutt
+    link $config/addressbook                     $HOME/.abook $HOME/.abook
 
-    section "Installing msmtp configs"
-    link $config/.mutt/.msmtprc && chmod -v 600 $HOME/.msmtprc
-    link $config/.mutt/.msmtp.esc.gpg      $HOME/.mutt
-    link $config/.mutt/.msmtp.centtech.gpg $HOME/.mutt
+    subnote "Installing mailcap file"
+    link $config/.mutt/.mailcap $HOME/.mutt
 
-    section "Installing imapfilter configs"
-    link $config/.imapfilter/esc.gpg    $HOME/.imapfilter $HOME/.imapfilter
-    link $config/.imapfilter/config.lua $HOME/.imapfilter
+    subnote "Installing msmtp configs"
+    link $config/.mutt/.msmtprc.gpg
+    link $config/.netrc.gpg
 
+    subnote "Installing imapfilter configs"
+    link $config/.imapfilter/esc.gpg                   $HOME/.imapfilter $HOME/.imapfilter
+    link $config/.imapfilter/config.lua.gpg            $HOME/.imapfilter
+    link $config/.imapfilter/centtech.gpg              $HOME/.imapfilter
+    link $config/.imapfilter/imapfilter-functions.lua  $HOME/.imapfilter
 
     section "Installing gpg configs"
     link $config/gpg.conf       $HOME/.gnupg $HOME/.gnupg
     link $config/gpg-agent.conf $HOME/.gnupg
-
 
     section "Installing Emacs configs"
     link $config/.gdbinit
@@ -205,7 +219,10 @@ case `uname -a` in
 	    link_root $config/pacman.conf
 	    link_root $config/bash/.bashrc.root.sh /root/.bashrc
 
-	    # If the wireless config is necessary
-	    [[ `ip addr | grep wlp` ]] && link_root $config/wpa_supplicant.conf
+	    if [[ $not_shared ]]; then
+		# If the wireless config is necessary
+		[[ `ip addr | grep wlp` ]] && link_root $config/wpa_supplicant.conf
+		link_root $config/hosts
+            fi
 	fi
 esac
