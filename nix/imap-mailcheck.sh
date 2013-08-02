@@ -10,34 +10,33 @@ fi
 
 # Customize these
 mailboxes="Inbox rss"
-workboxes=("Inbox")
+workboxes="Inbox"
 
-none="."			# no mail signal
-some="!"			# some mail signal
+none="¤"			# no mail signal
+some="√"			# some mail signal
 
 # variables
 output=""
 mailcheckrc="$HOME/.mailcheckrc"
-mailcheck_prefix="imap://esc@ericcrosson.com@imap.secureserver.net:143/"
+mail_prefix="imap://esc@ericcrosson.com@imap.secureserver.net:143/"
+work_prefix="imap://ecrosson@zmail0.centtech.com@zmail0.centtech.com:143/"
 separator=" "			# formatting
-
-
 
 for box in ${mailboxes}; do
 
     flag=${none}
-    echo ${mailcheck_prefix}${box} > ${mailcheckrc}
+    echo ${mail_prefix}${box} > ${mailcheckrc}
     [[ `mailcheck | grep new` ]] && flag=${some} # new mail indicator
 
     output="${output}${flag}${separator}${box}${Color_Off}${separator}"
 done
 
-[[ ${#output} != 0 ]] && output="${output} | "
+#[[ ${workboxes} && ${#output} != 0 ]] && output="${output} ~ "
 
 for box in ${workboxes}; do
 
     flag=${none}
-    echo ${mailcheck_prefix}${box} > ${mailcheckrc}
+    echo ${work_prefix}${box} > ${mailcheckrc}
     [[ `mailcheck | grep new` ]] && flag=${some} # new mail indicator
 
     output="${output}${flag}${separator}${box}${Color_Off}${separator}"
