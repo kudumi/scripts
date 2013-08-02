@@ -9,6 +9,7 @@ function ctrl-c() {
     echo
 }
 trap ctrl-c SIGINT
+trap ctrl-c EXIT
 
 # Variables
 mutt="mutt"
