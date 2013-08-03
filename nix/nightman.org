@@ -82,7 +82,7 @@ Now to handle requests by action
 
       f|flush) shift
           pushd `dirname $0` &>/dev/null
-          rm *${nightman_suffix}
+          rm *${nightman_suffix} 2>/dev/null
           popd &>/dev/null
           ;;
 
