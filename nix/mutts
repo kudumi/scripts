@@ -1,18 +1,8 @@
 #!/bin/bash
 
-# Here we trap the control c interrupt to avoid leaving behind
-# sensitive information
-function ctrl-c() {
-    for file in ${sensitive} ; do
-	shred -uz ${file%.gpg}
-    done
-    echo
-}
-trap ctrl-c SIGINT
-trap ctrl-c EXIT
+source $HOME/Dropbox/config/bash/bash.io.sh
 
 # Variables
-mutt="mutt"
 sensitive=$(cat<<EOF
 $HOME/.netrc.gpg
 $HOME/.msmtprc.gpg
@@ -21,19 +11,12 @@ $HOME/.imapfilter/config.lua.gpg
 EOF
 )
 
-# obtain password
-read -p "Password: " -s passwd
-echo
+function ctrl-c() { nightman return ${sensitive}; }
+trap ctrl-c SIGINT		# Trap exits and interrupts to
+trap ctrl-c EXIT		# avoid leaving behind secrets
 
-# Decrypt files
-pushd $HOME/.mutt 2>/dev/null
-for file in ${sensitive} ; do
-    gpg --batch -q --passphrase=${passwd} -o ${file%.gpg} -d ${file} 2>/dev/null
-    chmod 600 ${file%.gpg} 2>/dev/null
-done
+nightman checkout ${sensitive}
 
 # Run target
 export LOCAL_CONFIG='esc'
-${mutt}
-
-ctrl-c
+mutt
