@@ -1,3 +1,4 @@
+
 * The Nightman
 
 The Nightman Cometh
@@ -10,31 +11,37 @@ Here is how the Nightman keeps track of his records.
 
 In the beginning, the Nightman has all secrets under control.
 - To decrypt a secret, 'checkout' a file. If necessary, be ready with
-     authentication.
-- When you are done with your secret, appease the Nightman with 'return'
+  authentication.*
+- When you are done with your secret, appease the Nightman by 'return'ing
+  the file
 - To clear bad locks, use 'flush'
 
-#+NAME: include
+  *Authentication is only necessary when the secret is not already decrypted.
+
+#+NAME: includes
 #+BEGIN_SRC sh :tangle nightman
   source $HOME/Dropbox/config/bash/bash.io.sh
 #+END_SRC
 
 #+NAME: variables
 #+BEGIN_SRC sh :tangle nightman
-  nightman_suffix="nightman.lock"
+  nightman_prefix="nightman.lock"
 #+END_SRC
 
 #+NAME: commands
 #+BEGIN_SRC sh :tangle nightman
   function lock() {
-      touch `ls *${1##*/}.${nightman_suffix} 2>/dev/null | wc -l`.${1##*/}.${nightman_suffix}
+      file=$(replace_substring $1 \\/ ..)
+      touch ${nightman_prefix}.`ls ${nightman_prefix}*${file} 2>/dev/null | wc -l`.${file}
   }
 
   function unlock() {
-      file=${1%.gpg}
-      rm `ls *${file##*/}.${nightman_suffix} 2>/dev/null | tail -n1` 2>/dev/null
-      [[ -z `ls *${file##*/}.${nightman_suffix} 2>/dev/null` ]] && ${destroy} ${file} 2>/dev/null
+      file=$(replace_substring ${1%.gpg} \\/ ..)  # Drop the .gpg extension, if present
+      rm `ls ${nightman_prefix}*${file} 2>/dev/null | tail -n1` 2>/dev/null
+      [[ `ls ${nightman_prefix}*${file} 2>/dev/null` ]] || ${destroy} ${1%.gpg} 2>/dev/null
   }
+
+  function replace_substring() { echo `echo $1 | sed s/$2/$3/g` ; }
 
   destroy="shred -fuz"
   decrypt="gpg --batch -q"
@@ -82,17 +89,37 @@ Now to handle requests by action
 
       f|flush) shift
           pushd `dirname $0` &>/dev/null
-          rm *${nightman_suffix} 2>/dev/null
+          for file in `ls ${nightman_prefix}* 2>/dev/null`; do
+            name=${file#${nightman_prefix}.}
+            ${destroy} $(replace_substring ${name#*.} "\.\." "\\/")
+            rm ${file} 2>/dev/null
+          done
           popd &>/dev/null
           ;;
 
       ""|h|help)
           cat <<EOF
 
-  This is a literate program. See the documentation for details.
+    The Nightman Cometh
+       for secrets that shouldn't be out after dark.
 
-  EOF
-          exit 1 ;;
+    Check out secrets from the Nightman. Don't keep them longer than you
+    need them or he will take his secrets back forcibly.
+
+    Here is how the Nightman keeps track of his records.
+
+    In the beginning, the Nightman has all secrets under control.
+    - To decrypt a secret, 'checkout' a file. If necessary, be ready with
+      authentication.*
+    - When you are done with your secret, appease the Nightman by 'return'ing
+      the file
+    - To clear bad locks, use 'flush'
+
+      ,*Authentication is only necessary when the secret is not already decrypted.
+
+EOF
+
+    exit 1 ;;
 
       ,*) section "Unrecognized directive: $1"
           echo "Aborting" && exit 1 ;;
