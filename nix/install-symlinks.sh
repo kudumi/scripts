@@ -177,8 +177,12 @@ if [[ -z $only_root ]]; then
     section "Installing screen configs"
     link $config/screen/.screenrc
 
-    section "Installing uzbl configs"
+    section "Installing web configs"
+    subnote "Installing uzbl configs"
     link $config/uzbl.config $HOME/.config/uzbl/config $HOME/.config/uzbl
+
+    subnote "Installing elinks configs"
+    link $config/elinks.conf $HOME/.elinks $HOME/.elinks
 
     section "Installing other configs"
     link $config/.inputrc
