@@ -1,4 +1,4 @@
-*.nightman.lock
+nightman.lock.*
 *~undo-tree~
 /source
 /mining
