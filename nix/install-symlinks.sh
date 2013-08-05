@@ -141,7 +141,7 @@ if [[ -z $only_root ]]; then
 
     subnote "Installing imapfilter configs"
     link $config/.imapfilter/esc.gpg                   $HOME/.imapfilter $HOME/.imapfilter
-    link $config/.imapfilter/config.lua.gpg            $HOME/.imapfilter
+    link $config/.imapfilter/config.lua                $HOME/.imapfilter
     link $config/.imapfilter/centtech.gpg              $HOME/.imapfilter
     link $config/.imapfilter/imapfilter-functions.lua  $HOME/.imapfilter
 

@@ -6,8 +6,8 @@ source $HOME/Dropbox/config/bash/bash.io.sh
 sensitive=$(cat<<EOF
 $HOME/.netrc.gpg
 $HOME/.msmtprc.gpg
+$HOME/.imapfilter/esc.gpg
 $HOME/.mutt/.mutt.passwords.gpg
-$HOME/.imapfilter/config.lua.gpg
 EOF
 )
 
