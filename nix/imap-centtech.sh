@@ -2,9 +2,9 @@
 
 auth="$HOME/.imapfilter/centtech.gpg"
 
-function ctrl-c() { nightman return ${auth}; }
-trap ctrl-c SIGINT		# Trap exits and interrupts to
-trap ctrl-c EXIT		# avoid leaving behind secrets
+function ctrl_c() { nightman return ${auth}; }
+trap ctrl_c SIGINT		# Trap exits and interrupts to
+trap ctrl_c EXIT		# avoid leaving behind secrets
 
 nightman checkout ${auth}
 
