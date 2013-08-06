@@ -179,7 +179,7 @@ if [[ -z $only_root ]]; then
     section "Installing screen configs"
     link $config/screen/.screenrc
 
-    #TODO: Watch out here! This section may require root access to fully install
+    # TODO: Watch out here! This section may require root access to fully install
     section "Installing web configs"
     link $config/elinks.conf $HOME/.elinks $HOME/.elinks
 
