@@ -11,9 +11,10 @@ $HOME/.mutt/.mutt.passwords.gpg
 EOF
 )
 
-function ctrl-c() { nightman return ${sensitive}; }
-trap ctrl-c SIGINT		# Trap exits and interrupts to
-trap ctrl-c EXIT		# avoid leaving behind secrets
+function ctrl_c() { nightman return ${sensitive}; }
+trap ctrl_c SIGINT		# Trap exits and interrupts to
+trap ctrl_c EXIT		# avoid leaving behind secrets
+trap ctrl_c SIGTERM
 
 nightman checkout ${sensitive}
 
