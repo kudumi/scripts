@@ -79,7 +79,7 @@ loadFile ${bash_config}/bash.colors.sh
 # Flags
 unset no_root only_root remote_host not_shared
 
-while [[ $1 == *"-"* ]]; do
+while [[ $1 ]]; do
     case $1 in
 	--no-root|-nr ) no_root=1 ;;
 	--only-root|-or ) only_root=1 ;;
@@ -103,10 +103,12 @@ while [[ $1 == *"-"* ]]; do
 
  Only use this program if you are quite certain of what you are doing.
 
+    Control over installed files:
        --no-root    -nr     Don't install files in /etc
        --only-root  -or     Only install files in /etc
-       --not-shared -ns     This is not a shared machine, overwrite esc's stuff in /etc
+       --not-shared -ns     This is not a shared machine, overwrite ONLY esc's stuff in /etc
 
+    Other functions:
        --remote     -r      Install to a remote host (not functional)
        --help       -h      Display this menu
 
@@ -177,14 +179,18 @@ if [[ -z $only_root ]]; then
     section "Installing screen configs"
     link $config/screen/.screenrc
 
+    #TODO: Watch out here! This section may require root access to fully install
     section "Installing web configs"
-    subnote "Installing uzbl configs"
-    link $config/uzbl.config $HOME/.config/uzbl/config $HOME/.config/uzbl
-
-    subnote "Installing elinks configs"
     link $config/elinks.conf $HOME/.elinks $HOME/.elinks
 
-    section "Installing other configs"
+    subnote "Installing uzbl configs"
+    # Copy all files except one (called out in backticks.) This file
+    # goes to another dir (see root section below)
+    for file in `ls -A1 $config/uzbl/ | grep -v 'uzbl-dir.sh'`; do
+	link $config/uzbl/$file $HOME/.config/uzbl
+    done
+
+    section "Installing miscellaneous configs"
     link $config/.inputrc
     link $config/.octaverc
     link $config/.rtorrent.rc  "" $HOME/.screensession  # hack
@@ -198,14 +204,13 @@ if [[ -z $only_root ]]; then
 	    link $config/machines/`hostname`/$file
 	done
     fi
-
 fi
 
 section "Installing operating system-specific configs"
 case `uname -a` in
 
     # Hardlinks are necessary because Windows does not recognize
-    # symlinks like Unix does.
+    # symlinks like Unix does. Probably a Cygwin deficiency.
     *Cygwin* )			# prepare Windows
 	$hardlink "$config/../scripts/windows/rc.compat.bat" \
 	    "/cygdrive/c/Users/`whoami`/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/" ;;
@@ -223,10 +228,13 @@ case `uname -a` in
 	    link_root $config/pacman.conf
 	    link_root $config/bash/.bashrc.root.sh /root/.bashrc
 
+	    section "Installing root uzbl configs"
+	    link_root $config/uzbl/uzbl-dir.sh /usr/share/uzbl/examples/data/scripts/util
+
 	    if [[ $not_shared ]]; then
 		# If the wireless config is necessary
 		[[ `ip addr | grep wlp` ]] && link_root $config/wpa_supplicant.conf
-		link_root $config/hosts
+		link_root $config/hosts # block facebook
             fi
 	fi
 esac
