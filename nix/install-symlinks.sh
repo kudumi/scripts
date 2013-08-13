@@ -183,10 +183,11 @@ if [[ -z $only_root ]]; then
     section "Installing web configs"
     link $config/elinks.conf $HOME/.elinks $HOME/.elinks
 
+    # Copy all files except root config and userscripts. The root
+    # config is linked later (in the root section), while the
+    # userscripts are never linked.
     subnote "Installing uzbl configs"
-    # Copy all files except one (called out in backticks.) This file
-    # goes to another dir (see root section below)
-    for file in `ls -A1 $config/uzbl/ | grep -v 'uzbl-dir.sh'`; do
+    for file in `ls -A1p $config/uzbl/ | grep -v '/' | grep -v 'uzbl-dir.sh'`; do
 	link $config/uzbl/$file $HOME/.config/uzbl
     done
 
@@ -195,7 +196,8 @@ if [[ -z $only_root ]]; then
     link $config/.octaverc
     link $config/.rtorrent.rc  "" $HOME/.screensession  # hack
     # link $config/getmailrc $HOME/.getmail $HOME/.getmail
-    link $config/.pianobar $HOME/.config/pianobar/config $HOME/.config/pianobar
+    link $config/.pianobar $HOME/.config/pianobar/ $HOME/.config/pianobar
+    mv $HOME/.config/pianobar/.pianobar $HOME/.config/pianobar/config
 
     # Machine specific configuration scripts
     section "Installing host-specific configs"
