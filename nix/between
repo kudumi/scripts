@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cat | headless "$1" | tailless "$2"
