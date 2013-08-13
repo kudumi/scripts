@@ -3,21 +3,19 @@
 source $HOME/Dropbox/config/bash/bash.io.sh
 
 # Variables
-sensitive=$(cat<<EOF
-$HOME/.netrc.gpg
-$HOME/.msmtprc.gpg
-$HOME/.imapfilter/esc.gpg
-$HOME/.mutt/.mutt.passwords.gpg
-EOF
-)
+sensitive+=(
+    "$HOME/.netrc.gpg"
+    "$HOME/.msmtprc.gpg"
+    "$HOME/.imapfilter/esc.gpg"
+    "$HOME/.mutt/.mutt.passwords.gpg")
 
-function ctrl_c() { nightman return ${sensitive}; }
+function ctrl_c() { nightman return "${sensitive[@]}"; }
 trap ctrl_c SIGINT		# Trap exits and interrupts to
 trap ctrl_c EXIT		# avoid leaving behind secrets
 trap ctrl_c SIGTERM
 
-nightman checkout ${sensitive}
+nightman checkout "${sensitive[@]}"
 
 # Run target
 export LOCAL_CONFIG='esc'
-mutt
+/usr/bin/mutt
