@@ -50,78 +50,78 @@ In the beginning, the Nightman has all secrets under control.
 Now to handle requests by action
 
 #+BEGIN_SRC sh :tangle nightman
-  function crypt() {
-      unset encrypt query;
-      case $1 in
-          e|en|encrypt) encrypt=1 ;;
-      esac; shift
+    function crypt() {
+        unset encrypt query;
+        case $1 in
+            e|en|encrypt) encrypt=1 ;;
+        esac; shift
 
-      if [[ $encrypt ]]; then
-          for arg; do         # Determine if authentication is necessary
-              [[ -z $query && $1 && -e ${1%.gpg} ]] || query=1 # Does each file exist?
-          done
-          [[ $query ]] && query_password # Prompt user if necessary
-      fi
+        if [[ $encrypt ]]; then
+            for arg; do         # Determine if authentication is necessary
+                [[ -z $query && ${arg} && -e ${arg%.gpg} ]] || query=1 # Does each file exist?
+            done
+            [[ $query ]] && query_password # Prompt user if necessary
+        fi
 
-      while [[ $1 ]]; do
-          # If the secret is not out of the bottle, let it out
-          [[ $encrypt && $query && ! -e ${1%.gpg} ]] && \
-              gpg --batch -q --passphrase=${secret_passwd} -o ${1%.gpg} --decrypt ${1} \
-              && chmod 600 ${1%.gpg} 2>/dev/null
+        while [[ $1 ]]; do
+            # If the secret is not out of the bottle, let it out
+            [[ $encrypt && $query && ! -e ${1%.gpg} ]] && \
+                gpg --batch -q --passphrase=${secret_passwd} -o ${1%.gpg} --decrypt ${1} \
+                && chmod 600 ${1%.gpg} 2>/dev/null
 
-          pushd `dirname $0` &>/dev/null # Add the lock in the dir containing this script
-          {                              # Inside this block, lock or unlock the file
-              if [[ $encrypt ]]; then lock ${1%.gpg}
-              else                     unlock $1; fi
-          }
-          popd &>/dev/null
-          shift
-      done
-  }
+            pushd `dirname $0` &>/dev/null # Add the lock in the dir containing this script
+            {                              # Inside this block, lock or unlock the file
+                if [[ $encrypt ]]; then lock ${1%.gpg}
+                else                    unlock $1; fi
+            }
+            popd &>/dev/null
+            shift
+        done
+    }
 
-  case $1 in
+    case $1 in
 
-      c|checkout) shift
-          crypt encrypt $@ ;;
+        c|checkout) shift
+            crypt encrypt $@ ;;
 
-      r|return) shift
-          crypt decrypt $@ ;;
+        r|return) shift
+            crypt decrypt $@ ;;
 
-      f|flush) shift
-          pushd `dirname $0` &>/dev/null
-          for file in `ls ${nightman_prefix}* 2>/dev/null`; do
-            name=${file#${nightman_prefix}.}
-            ${destroy} $(replace_substring ${name#*.} "\.\." "\\/")
-            rm ${file} 2>/dev/null
-          done
-          popd &>/dev/null
-          ;;
+        f|flush) shift
+            pushd `dirname $0` &>/dev/null
+            for file in `ls ${nightman_prefix}* 2>/dev/null`; do
+              name=${file#${nightman_prefix}.}
+              ${destroy} $(replace_substring ${name#*.} "\.\." "\\/")
+              rm ${file} 2>/dev/null
+            done
+            popd &>/dev/null
+            ;;
 
-      ""|h|help)
-          cat <<EOF
+        ""|h|help)
+            cat <<EOF
 
-    The Nightman Cometh
-       for secrets that shouldn't be out after dark.
+      The Nightman Cometh
+         for secrets that shouldn't be out after dark.
 
-    Check out secrets from the Nightman. Don't keep them longer than you
-    need them or he will take his secrets back forcibly.
+      Check out secrets from the Nightman. Don't keep them longer than you
+      need them or he will take his secrets back forcibly.
 
-    Here is how the Nightman keeps track of his records.
+      Here is how the Nightman keeps track of his records.
 
-    In the beginning, the Nightman has all secrets under control.
-    - To decrypt a secret, 'checkout' a file. If necessary, be ready with
-      authentication.*
-    - When you are done with your secret, appease the Nightman by 'return'ing
-      the file
-    - To clear bad locks, use 'flush'
+      In the beginning, the Nightman has all secrets under control.
+      - To decrypt a secret, 'checkout' a file. If necessary, be ready with
+        authentication.*
+      - When you are done with your secret, appease the Nightman by 'return'ing
+        the file
+      - To clear bad locks, use 'flush'
 
-      ,*Authentication is only necessary when the secret is not already decrypted.
+        ,*Authentication is only necessary when the secret is not already decrypted.
 
-EOF
+  EOF
 
-    exit 1 ;;
+      exit 1 ;;
 
-      ,*) section "Unrecognized directive: $1"
-          echo "Aborting" && exit 1 ;;
-  esac
+        ,*) section "Unrecognized directive: $1"
+            echo "Aborting" && exit 1 ;;
+    esac
 #+END_SRC
