@@ -14,7 +14,7 @@ In the beginning, the Nightman has all secrets under control.
   authentication.*
 - When you are done with your secret, appease the Nightman by 'return'ing
   the file
-- To clear bad locks, use 'flush'
+- To clear stale locks, use 'flush'
 
   *Authentication is only necessary when the secret is not already decrypted.
 
