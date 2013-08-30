@@ -1,4 +1,7 @@
 
+* TODOs
+Add pid checks on a timer
+
 * The Nightman
 
 The Nightman Cometh
@@ -16,7 +19,7 @@ In the beginning, the Nightman has all secrets under control.
   the file
 - To clear stale locks, use 'flush'
 
-  *Authentication is only necessary when the secret is not already decrypted.
+Note: Authentication is only necessary when the secret is not already decrypted.
 
 #+NAME: includes
 #+BEGIN_SRC sh :tangle nightman
@@ -25,7 +28,7 @@ In the beginning, the Nightman has all secrets under control.
 
 #+NAME: variables
 #+BEGIN_SRC sh :tangle nightman
-  nightman_prefix="nightman.lock"
+  nightman_prefix="/tmp/nightman/"
 #+END_SRC
 
 #+NAME: commands
@@ -60,21 +63,27 @@ Now to handle requests by action
             for arg; do         # Determine if authentication is necessary
                 [[ -z $query && ${arg} && -e ${arg%.gpg} ]] || query=1 # Does each file exist?
             done
-            [[ $query ]] && query_password # Prompt user if necessary
         fi
 
         while [[ $1 ]]; do
-            # If the secret is not out of the bottle, let it out
-            [[ $encrypt && $query && ! -e ${1%.gpg} ]] && \
-                gpg --batch -q --passphrase=${secret_passwd} -o ${1%.gpg} --decrypt ${1} \
-                && chmod 600 ${1%.gpg} 2>/dev/null
+            [[ $query ]] && query_password # Prompt user if necessary
 
-            pushd `dirname $0` &>/dev/null # Add the lock in the dir containing this script
-            {                              # Inside this block, lock or unlock the file
-                if [[ $encrypt ]]; then lock ${1%.gpg}
-                else                    unlock $1; fi
-            }
-            popd &>/dev/null
+            # If the secret is not out of the bottle, let it out
+            if [[ $encrypt && $query && ! -e ${1%.gpg} ]]; then
+                gpg --batch -q --passphrase=${secret_passwd} -o ${1%.gpg} --decrypt ${1}
+                if [[ -e ${1%.gpg} ]]; then
+                    chmod 600 ${1%.gpg} 2>/dev/null # protect with permissions
+                else                                # wrong passwd?
+                    continue
+                fi
+            fi
+
+            # Inside this block, lock or unlock the file
+            if [[ $encrypt ]]; then
+                lock ${1%.gpg}
+            else
+                unlock $1
+            fi
             shift
         done
     }
@@ -90,9 +99,9 @@ Now to handle requests by action
         f|flush) shift
             pushd `dirname $0` &>/dev/null
             for file in `ls ${nightman_prefix}* 2>/dev/null`; do
-              name=${file#${nightman_prefix}.}
-              ${destroy} $(replace_substring ${name#*.} "\.\." "\\/")
-              rm ${file} 2>/dev/null
+                name=${file#${nightman_prefix}.}
+                ${destroy} $(replace_substring ${name#*.} "\.\." "\\/") &>/dev/null
+                rm ${file} 2>/dev/null
             done
             popd &>/dev/null
             ;;
@@ -119,7 +128,7 @@ Now to handle requests by action
 
   EOF
 
-      exit 1 ;;
+  exit 1 ;;
 
         ,*) section "Unrecognized directive: $1"
             echo "Aborting" && exit 1 ;;
