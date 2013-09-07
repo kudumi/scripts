@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+imapfilter="/usr/bin/imapfilter"
+imapfilter_log="$HOME/Dropbox/config/.imapfilter/`basename $0`.log"
+lines_to_keep=100
+
+auth="$HOME/.imapfilter/esc.gpg"
+
+function ctrl_c () { nightman return ${auth}; }
+trap ctrl_c SIGINT		# Trap exits and interrupts to
+trap ctrl_c EXIT		# avoid leaving behind secrets
+
+nightman checkout ${auth}
+
+# Record the date and the last messages moved
+echo -e "\n`date`" >> $imapfilter_log
+imapfilter $* >> $imapfilter_log
+
+cat $imapfilter_log | tail -n $lines_to_keep > $imapfilter_log.tmp
+mv $imapfilter_log.tmp $imapfilter_log
