@@ -1,31 +1,27 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 . ~/.bashrc --silent
 
-if [ -f "$1" ] ; then
-    case "$1" in
-        *.tar.bz2)   tar xvjf "$1"     ;;
-        *.tar.gz)    tar xvzf "$1"     ;;
-        *.bz2)       bunzip2 "$1"      ;;
-        *.rar)       unrar x "$1"      ;;
-        *.gz)        gunzip "$1"       ;;
-        *.tar)       tar xvf "$1"      ;;
-        *.tbz2)      tar xvjf "$1"     ;;
-        *.tgz)       tar xvzf "$1"     ;;
-        *.zip)       unzip "$1"        ;;
-        *.Z)         uncompress "$1"   ;;
-        *.7z)        7z x "$1"         ;;
-        *)           echo -ne "$ALERT '$1' cannot be extracted via"
-    	echo -ne "${BOLD}$FUNCNAME${Color_Off}"
-    	return 1 ;;
-    esac; echo
-    read -s -p "|> Do you want to remove $1? [y/n]" -n 1 choice
-    case "$choice" in
-        y)	echo "" && rm -v "$1"	;;
-        *)	echo ""                 ;;
-    esac
-    unset choice
-else
+# TODO: check to see if the required binary exists! Optionally, install it.
+
+if [ ! -f "$1" ] ; then
     echo "$ALERT '$1' is not a valid file"
     return $false
 fi
+
+case "$1" in
+    *.tar.bz2)   tar xvjf "$1"     ;;
+    *.tar.gz)    tar xvzf "$1"     ;;
+    *.bz2)       bunzip2 "$1"      ;;
+    *.rar)       unrar x "$1"      ;;
+    *.gz)        gunzip "$1"       ;;
+    *.tar)       tar xvf "$1"      ;;
+    *.tbz2)      tar xvjf "$1"     ;;
+    *.tgz)       tar xvzf "$1"     ;;
+    *.zip)       unzip "$1"        ;;
+    *.Z)         uncompress "$1"   ;;
+    *.7z)        7z x "$1"         ;;
+    *)           echo -ne "$ALERT '$1' cannot be extracted via"
+    	echo -ne "${BOLD}$FUNCNAME${Color_Off}"
+    	return 1 ;;
+esac; echo
