@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 pushd $HOME/.emacs.d > /dev/null
 
-carton install
-carton update
+cask install
+cask update
