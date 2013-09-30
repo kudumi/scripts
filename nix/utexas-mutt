@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+source $HOME/Dropbox/config/bash/bash.io.sh
+
+sensitive+=(
+    "$HOME/.netrc.gpg"
+    "$HOME/.msmtprc.gpg"
+    "$HOME/.mutt/.mutt.passwords.gpg")
+#    "$HOME/.imapfilter/utexas.gpg"
+
+function ctrl_c() { nightman return "${sensitive[@]}"; }
+trap ctrl_c SIGINT		# Trap exits and interrupts to
+trap ctrl_c EXIT		# avoid leaving behind secrets
+trap ctrl_c SIGTERM
+
+nightman checkout "${sensitive[@]}"
+
+export LOCAL_CONFIG='utexas'
+/usr/bin/mutt
