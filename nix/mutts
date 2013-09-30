@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source $HOME/Dropbox/config/bash/bash.io.sh
 
@@ -18,4 +18,4 @@ nightman checkout "${sensitive[@]}"
 
 # Run target
 export LOCAL_CONFIG='esc'
-/usr/bin/mutt
+/usr/bin/mutt "$@"
