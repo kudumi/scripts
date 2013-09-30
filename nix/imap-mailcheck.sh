@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ -z `which mailcheck 2>/dev/null` ]]; then
     echo "mailcheck not installed"

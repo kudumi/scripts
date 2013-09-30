@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 auth="$HOME/.imapfilter/centtech.gpg"
 
