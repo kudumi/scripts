@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 name=mailer
 screen -wipe			# clear out stale screens

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 source ~/.bashrc --silent
 
 WGET=`which wget`
@@ -12,7 +12,7 @@ PERSONAL=https://www.google.com/calendar/ical/eric.s.crosson%40gmail.com/private
 # $1 url of calendar
 # $2 name of calendar
 function appendCalendar() {
-    $WGET --no-check-certificate -qO $ICSFILE $1 
+    $WGET --no-check-certificate -qO $ICSFILE $1
     awk -f $ICS2ORG -v calName=$2 < $ICSFILE >> $ORGFILE
     rm $ICSFILE
 }

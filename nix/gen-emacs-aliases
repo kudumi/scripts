@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source ~/.bashrc --silent	# grab the aliases
 out="$HOME/.emcas.d/eshell/alias"

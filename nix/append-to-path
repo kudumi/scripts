@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 [ -z "$1" ] && return 1
 [ -z "`echo $PATH|grep $1`" ] && export PATH=$PATH:$1

@@ -1,7 +1,28 @@
 #!/bin/bash
 
+while [[ $1 ]]; do
+    case $1 in
+
+	-h|--help)
+	    cat<<EOF
+`basename $0`: A script to activate wifi and connect to the internet.
+
+Note: be sure rfkill is not activated.
+
+Possible arguments are as follows
+
+         --help
+         -h       Display this help information. `basename $0` has no man page.
+EOF
+	    exit $EXIT_HELP
+	    ;;
+    esac
+    shift
+done
+
 unset driver
-interface=$(ip addr | grep -o "wlp[[:alnum:]]*")
+source $HOME/.bashrc --silent
+interface=$(wi)
 
 case $interface in
     wlp*) driver=wext ;;
