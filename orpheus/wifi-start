@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+sudo wpa_supplicant -B -iws3 -c/etc/wpa_supplicant.conf
+sudo dhcpcd wls3
