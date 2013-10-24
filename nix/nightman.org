@@ -43,14 +43,14 @@ Note: Authentication is only necessary when the secret is not already decrypted.
   function lock() {
       mkdir -p ${nightman_prefix}
       file=$(replace_substring $1 \\/ ..)
-      previous=$(ls -a1 ${nightman_prefix}.*${file} 2>/dev/null | wc -l)
+      previous=$(ls -A1 ${nightman_prefix}.*${file} 2>/dev/null | wc -l)
       touch ${nightman_prefix}.${previous}.${file}
   }
 
   function unlock() {
       file=$(replace_substring ${1%.gpg} \\/ ..)  # Drop the .gpg extension, if present
-      rm `ls -a1 ${nightman_prefix}.*${file} 2>/dev/null | tail -n1` 2>/dev/null
-      [[ `ls -a1 ${nightman_prefix}.*${file} 2>/dev/null` ]] || ${destroy} ${1%.gpg} 2>/dev/null
+      rm `ls -A1 ${nightman_prefix}.*${file} 2>/dev/null | tail -n1` 2>/dev/null
+      [[ `ls -A1 ${nightman_prefix}.*${file} 2>/dev/null` ]] || ${destroy} ${1%.gpg} 2>/dev/null
   }
 
   function replace_substring() { echo `echo $1 | sed s/$2/$3/g` ; }
@@ -115,12 +115,16 @@ Now to handle requests by action
               crypt decrypt $@ ;;
 
           f|flush) shift
-              for file in $(ls -1a ${nightman_prefix}); do
+              for file in $(ls -1A ${nightman_prefix}); do
                   name=${file#${nightman_prefix#/}.}
                   ${destroy} $(replace_substring ${name#*.} "\.\." "\\/") &>/dev/null
                   rm ${file} 2>/dev/null
-              done
-              ;;
+              done ;;
+
+          l|list)
+              for file in $(ls -1A ${nightman_prefix}); do
+                  echo $(replace_substring ${file#.[0-9].} "\.\." "\\/")
+              done ;;
 
           ""|h|help)
               cat <<EOF
