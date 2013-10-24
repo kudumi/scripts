@@ -23,6 +23,7 @@ Note: Authentication is only necessary when the secret is not already decrypted.
 #+NAME: includes
 #+BEGIN_SRC sh :tangle nightman
   source $HOME/Dropbox/config/bash/bash.io.sh
+  shopt -s extglob                # include extra (non-std) glob opts
 #+END_SRC
 
 #+NAME: variables
